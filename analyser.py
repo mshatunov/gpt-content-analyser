@@ -1,7 +1,22 @@
 import re
 import json
 import requests
+from youtube_transcript_api import YouTubeTranscriptApi
 
+
+def get_api_key(file_name):
+    """Read the API key from a file."""
+    with open(file_name, 'r') as file:
+        return file.read().strip()
+
+def get_youtube_transcript(video_id):
+    try:
+        transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['ru', 'en'])
+        transcript_text = ' '.join([item['text'] for item in transcript_list])
+        return transcript_text
+    except Exception as e:
+        print(f"Ошибка при получении субтитров с YouTube: {e}")
+        return None
 
 def generate_text(api_key, model, prompt, advise):
     """Generate text using GPT model with given prompt and advise."""
@@ -68,14 +83,26 @@ def write_to_file(file_name, text_chunks):
 
 
 def main():
-    file_name = input("Введите имя файла: ")
     content_type = input("Введите тип контента (1 - встреча, 2 - видео): ")
-    text = read_file(file_name)
-    MAX_TOKENS = 1400
-    text_chunks = split_text(text, MAX_TOKENS)
 
-    api_key = "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"
+    if content_type == "1":
+        file_name = input("Введите имя файла: ")
+        text = read_file(file_name)
+        output_file = f"{file_name.rstrip('.txt')}_output.txt"
+    elif content_type == "2":
+        video_id = input("Введите идентификатор видео на YouTube: ")
+        text = get_youtube_transcript(video_id)
+        output_file = f"{video_id}_output.txt"
+    else:
+        print("Некорректный тип контента")
+        return
+    
+    api_key_file = "api_key"
+    api_key = get_api_key(api_key_file)
     model = "gpt-3.5-turbo"
+    MAX_TOKENS = 1400
+
+    text_chunks = split_text(text, MAX_TOKENS)
 
     # Set up the advice based on content type
     if content_type == "1":
@@ -95,7 +122,6 @@ def main():
         if usage:
             print(f"API usage: {usage}")
 
-    output_file = f"{file_name.rstrip('.txt')}_output.txt"
     write_to_file(output_file, text_responses)
     print(f"Результат работы программы сохранен в файл {output_file}")
 

@@ -2,6 +2,11 @@
 
 GPT Content Analyzer is a Python-based tool that leverages the power of GPT-3.5 to analyze and summarize transcripts from meetings and video content. With the help of GPT, this tool aims to provide insights and key takeaways from the input transcripts.
 
+## Requirements
+
+- Python 3
+- An OpenAI API key
+
 ## Features
 
 - Analyze transcripts from meetings to provide an overview, decisions made, and tasks assigned
@@ -23,8 +28,18 @@ cd gpt-content-analyser
 
 3. Install the required dependencies:
 ```bash
-pip3 install -r requirements.txt
+pip3 install -r requirements
 ```
+
+## API Key Setup
+
+1. Obtain an API key from OpenAI.
+
+2. Create a file named `api_key` in the project root directory.
+
+3. Copy and paste your API key into the `api_key` file and save it.
+
+**Important:** Add `api_key` to your `.gitignore` file to avoid accidentally committing the API key to your repository.
 
 ## Usage
 1. Ensure you have your GPT-3 API key in the api_key variable.
